@@ -3,6 +3,7 @@ import cors from "cors";
 import express from "express";
 import "./db.js";
 import authRoutes from "./routes/auth.js";
+import productRoutes from "./routes/products.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 // Boleh lebih dari satu origin, dipisah koma (mis. dev server + preview)
@@ -23,6 +24,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/products", productRoutes);
 
 // Endpoint yang tidak ada -> 404 dalam format JSON yang sama
 app.use("/api", (req, res) => {
