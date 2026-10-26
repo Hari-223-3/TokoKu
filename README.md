@@ -21,8 +21,8 @@ The public site is a single scrolling page: Home (storefront) → Catalog → Ab
 
 ## Links
 
-- Repository: https://github.com/billgatespadmathang/WebDevProject
-- Website (GitHub Pages): https://billgatespadmathang.github.io/WebDevProject/
+- Repository: https://github.com/Hari-223-3/TokoKu
+- Website (GitHub Pages): https://hari-223-3.github.io/TokoKu/
 
 > **Note:** the GitHub Pages site only contains the web app. It needs a deployed backend to load products and log in, and backend hosting is covered in **Week 13**. Until then, run both parts locally as shown below.
 
@@ -42,7 +42,7 @@ npm run dev                   # starts the API with auto-restart (use `npm start
 
 Check that it runs: open http://localhost:3000/api/health. It should show `{"status":"ok", ...}`.
 
-### 2. Web app (http://localhost:5173/WebDevProject/)
+### 2. Web app (http://localhost:5173/TokoKu/)
 
 Open a **second** terminal (keep the backend running):
 
