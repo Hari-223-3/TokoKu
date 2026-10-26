@@ -167,7 +167,7 @@ function ManageOrders() {
           </button>
         ))}
       </div>
-      <OrderTable orders={filtered} showItems />
+      <OrderTable orders={filtered} showItems statusEditable />
     </SectionCard>
   );
 }

@@ -77,7 +77,14 @@ export function DataProvider({ children }) {
     return order;
   }
 
-  const value = { products, orders, loading, error, addProduct, updateProduct, addOrder };
+  // Admin mengubah status pesanan, mis. "Pending" -> "Dibayar"
+  async function updateOrderStatus(id, status) {
+    const order = await api(`/orders/${id}/status`, { method: "PATCH", body: { status } });
+    await reloadOrders();
+    return order;
+  }
+
+  const value = { products, orders, loading, error, addProduct, updateProduct, addOrder, updateOrderStatus };
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }
 
