@@ -1,0 +1,17 @@
+# Dependensi & hasil build (berlaku untuk semua subfolder: web-admin/, backend/)
+node_modules/
+dist/
+.vite/
+*.local
+.DS_Store
+
+# Rahasia & konfigurasi lokal — yang di-commit hanya .env.example
+.env
+.env.*
+!.env.example
+
+# File database SQLite lokal (dibuat ulang dengan `npm run seed`)
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
