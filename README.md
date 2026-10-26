@@ -23,6 +23,7 @@ Stack: React + Vite + React Router + Tailwind, with **hardcoded data** (no backe
 ## Running locally
 
 ```bash
+cd web-admin
 npm install
 npm run dev       # http://localhost:5173
 npm run build     # build output goes to dist/
@@ -49,4 +50,4 @@ npm run deploy    # build + publish dist/ to the gh-pages branch (GitHub Pages)
 | `#/dashboard?view=statistik` | Store | Admin: Sales Statistics — period filter, KPIs, daily revenue chart, revenue by category, order status, best sellers |
 | `#/form` | Store | Admin: add/edit product (`?id=`). Client: create an order (`?productId=`) |
 
-The company profile content lives in `src/data/company.js`. Store logo: `public/images/logo-mark.png` (the emblem cropped from `Logo TokoKu.jpg`), used through the `src/components/Logo.jsx` component; the favicon is `public/favicon.png`. Product photos are in `public/images/products/`, with their sources and licenses in `CREDITS.md`. Data submitted through the forms is kept only in state and is lost on refresh, which is within the scope of the midterm project.
+The company profile content lives in `web-admin/src/data/company.js`. Store logo: `web-admin/public/images/logo-mark.png` (the emblem cropped from `Logo TokoKu.jpg`), used through the `src/components/Logo.jsx` component; the favicon is `public/favicon.png`. Product photos are in `public/images/products/`, with their sources and licenses in `CREDITS.md`. Data submitted through the forms is kept only in state and is lost on refresh, which is within the scope of the midterm project.
