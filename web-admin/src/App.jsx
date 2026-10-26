@@ -7,11 +7,24 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import FormPage from "./pages/FormPage";
+import LoadingSpinner from "./components/LoadingSpinner";
+
+// Ditampilkan sebentar saat sesi login dipulihkan dari token setelah refresh
+function SessionLoading() {
+  return (
+    <div className="min-h-screen bg-ivory">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-8">
+        <LoadingSpinner text="Memulihkan sesi..." />
+      </div>
+    </div>
+  );
+}
 
 // Halaman toko yang butuh login: jika belum login, arahkan ke /login
 // (atau ke beranda jika user baru saja logout)
 function ProtectedRoute({ children }) {
-  const { user, loggedOut } = useAuth();
+  const { user, loggedOut, restoring } = useAuth();
+  if (restoring) return <SessionLoading />;
   if (!user) return <Navigate to={loggedOut ? "/" : "/login"} replace />;
   return <Layout>{children}</Layout>;
 }
@@ -19,8 +32,9 @@ function ProtectedRoute({ children }) {
 // Jika sudah login, halaman login tidak ditampilkan lagi.
 // Client yang datang dari tombol "Pesan" di katalog langsung diarahkan ke form pesanan produk itu.
 function GuestRoute({ children }) {
-  const { user } = useAuth();
+  const { user, restoring } = useAuth();
   const location = useLocation();
+  if (restoring) return <SessionLoading />;
   if (user) {
     const from = user.role === "client" ? location.state?.from : null;
     return <Navigate to={from ?? "/dashboard"} replace />;
@@ -41,7 +55,7 @@ export default function App() {
               <Route key={path} path={path} element={<PublicLayout promo><HomePage /></PublicLayout>} />
             ))}
 
-            {/* Area toko — fitur pendukung (login simulasi) */}
+            {/* Area toko — login lewat backend (JWT) */}
             <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/form" element={<ProtectedRoute><FormPage /></ProtectedRoute>} />

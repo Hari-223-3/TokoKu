@@ -1,3 +1,15 @@
+import Icon from "./Icon";
+
+// Kotak pesan error dari server (mis. "Username atau password salah", "Stok tidak mencukupi")
+export function ErrorAlert({ children }) {
+  if (!children) return null;
+  return (
+    <div role="alert" className="flex items-center gap-2 rounded-xl bg-[#FBE3DC] px-3.5 py-2.5 text-[13px] font-semibold text-[#A83A21]">
+      <Icon name="alert" size={16} className="shrink-0" /> {children}
+    </div>
+  );
+}
+
 // Pola input form TokoKu: label di atas, pesan error merah di bawah field
 export default function FormField({ id, label, optional = false, error, hint, children }) {
   return (

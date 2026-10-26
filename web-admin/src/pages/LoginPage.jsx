@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { ErrorAlert } from "../components/FormField";
 import { Spinner } from "../components/LoadingSpinner";
 import Icon from "../components/Icon";
 import Logo from "../components/Logo";
@@ -32,11 +33,13 @@ export default function LoginPage() {
     if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
-    const user = await login(username, password);
-    // Jika berhasil, GuestRoute otomatis mengarahkan ke halaman berikutnya
-    if (!user) {
+    try {
+      // Jika berhasil, GuestRoute otomatis mengarahkan ke halaman berikutnya
+      await login(username, password);
+    } catch (err) {
+      // pesan dari server, mis. "Username atau password salah"
       setLoading(false);
-      setError("Username atau password salah");
+      setError(err.message);
     }
   }
 
@@ -121,11 +124,7 @@ export default function LoginPage() {
               {fieldErrors.password && <p className="text-xs font-semibold text-coral">{fieldErrors.password}</p>}
             </div>
 
-            {error && (
-              <div role="alert" className="flex items-center gap-2 rounded-xl bg-[#FBE3DC] px-3.5 py-2.5 text-[13px] font-semibold text-[#A83A21]">
-                <Icon name="alert" size={16} /> {error}
-              </div>
-            )}
+            <ErrorAlert>{error}</ErrorAlert>
 
             <button
               type="submit"
