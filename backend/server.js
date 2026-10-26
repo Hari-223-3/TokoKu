@@ -2,6 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import "./db.js";
+import authRoutes from "./routes/auth.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 // Boleh lebih dari satu origin, dipisah koma (mis. dev server + preview)
@@ -20,6 +21,8 @@ app.use(express.json());
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", time: new Date().toISOString() });
 });
+
+app.use("/api/auth", authRoutes);
 
 // Endpoint yang tidak ada -> 404 dalam format JSON yang sama
 app.use("/api", (req, res) => {
