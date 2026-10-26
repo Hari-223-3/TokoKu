@@ -55,7 +55,7 @@ export const ORDERS = [
   },
   {
     id: 4,
-    orderNumber: "INV-20260915-004",
+    orderNumber: "INV-20260924-004",
     customerId: 2,
     customerName: "Budi Santoso",
     items: [
@@ -71,7 +71,7 @@ export const ORDERS = [
   },
   {
     id: 5,
-    orderNumber: "INV-20260920-005",
+    orderNumber: "INV-20260925-005",
     customerId: 5,
     customerName: "Andi Pratama",
     items: [

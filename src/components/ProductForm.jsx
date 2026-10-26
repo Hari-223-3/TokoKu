@@ -34,6 +34,7 @@ function validate(values) {
 
   if (values.estimatedDays === "") errors.estimatedDays = "Estimasi pengiriman wajib diisi";
   else if (Number(values.estimatedDays) <= 0) errors.estimatedDays = "Estimasi harus lebih dari 0 hari";
+  else if (!Number.isInteger(Number(values.estimatedDays))) errors.estimatedDays = "Estimasi harus bilangan bulat";
 
   return errors;
 }
