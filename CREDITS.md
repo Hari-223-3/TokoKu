@@ -1,8 +1,8 @@
 # Kredit Foto Produk
 
 Foto produk di `public/images/products/` (24 file, dipakai oleh `src/data/products.js`) diambil dari
-kumpulan foto produk fashion yang disediakan pengguna proyek ini (folder lokal `images/`, tidak ikut
-di-commit ke repo karena ukurannya besar — lihat `.gitignore`).
+kumpulan foto produk fashion yang disediakan pengguna proyek ini (disimpan di luar repo karena
+ukurannya besar).
 
 > **Catatan:** set foto pertama (bersumber dari Wikimedia Commons / rawpixel / StockSnap, berlisensi CC0
 > & CC BY) yang dipakai di tahap awal proyek sudah dihapus dan digantikan seluruhnya oleh set ini, supaya
