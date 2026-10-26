@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useData } from "../context/DataContext";
 import { CATEGORIES } from "../data/products";
 import { formatRupiah } from "../utils/format";
-import FormField, { SubmitButton, SuccessPanel, primaryLinkClass, secondaryLinkClass } from "./FormField";
+import FormField, { ErrorAlert, SubmitButton, SuccessPanel, primaryLinkClass, secondaryLinkClass } from "./FormField";
 import ProductThumb from "./ProductThumb";
 
 const EMPTY = {
@@ -51,6 +51,7 @@ export default function ProductForm({ product }) {
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -59,29 +60,34 @@ export default function ProductForm({ product }) {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitError("");
     const found = validate(values);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
     setSaving(true);
-    setTimeout(() => {
-      const data = {
-        name: values.name.trim(),
-        category: values.category,
-        price: Number(values.price),
-        stock: Number(values.stock),
-        estimatedDays: Number(values.estimatedDays),
-        description: values.description.trim(),
-        imageUrl: values.imageUrl.trim(),
-        isActive: values.isActive,
-      };
-      if (isEdit) updateProduct(product.id, data);
-      else addProduct(data);
-      setSaving(false);
+    const data = {
+      name: values.name.trim(),
+      category: values.category,
+      price: Number(values.price),
+      stock: Number(values.stock),
+      estimatedDays: Number(values.estimatedDays),
+      description: values.description.trim(),
+      imageUrl: values.imageUrl.trim(),
+      isActive: values.isActive,
+    };
+    try {
+      if (isEdit) await updateProduct(product.id, data);
+      else await addProduct(data);
       setSaved(true);
-    }, 700);
+    } catch (err) {
+      // validasi server (mis. harga bukan bilangan bulat) atau server tidak bisa dihubungi
+      setSubmitError(err.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (saved) {
@@ -111,8 +117,8 @@ export default function ProductForm({ product }) {
           </>
         }
       >
-        <b className="text-ink">{values.name}</b> sudah tersimpan dan langsung tampil di katalog. Data hanya tersimpan
-        sementara dan akan kembali seperti semula saat halaman di-refresh.
+        <b className="text-ink">{values.name}</b> sudah tersimpan di database
+        {values.isActive ? " dan langsung tampil di katalog." : ". Produk ini nonaktif, jadi tidak tampil di katalog publik."}
       </SuccessPanel>
     );
   }
@@ -171,6 +177,7 @@ export default function ProductForm({ product }) {
           <div className="text-[14px] font-bold text-ink">{values.name || "Nama produk"}</div>
           <div className="mt-1 font-display text-[16px] font-extrabold text-ink">{formatRupiah(preview.price)}</div>
         </div>
+        <ErrorAlert>{submitError}</ErrorAlert>
         <SubmitButton loading={saving} className="w-full">
           {isEdit ? "Simpan Perubahan" : "Tambah Produk"}
         </SubmitButton>

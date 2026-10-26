@@ -29,17 +29,16 @@ export function setToken(value) {
 // Pembungkus fetch: menambah header Authorization, mengubah body ke JSON,
 // dan melempar Error berisi pesan dari server ({ message }) jika gagal.
 export async function api(path, { method = "GET", body } = {}) {
-  const headers = {};
-  if (token) headers.Authorization = `Bearer ${token}`;
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  const options = { method, headers: {} };
+  if (token) options.headers.Authorization = `Bearer ${token}`;
+  if (body !== undefined) {
+    options.headers["Content-Type"] = "application/json";
+    options.body = JSON.stringify(body);
+  }
 
   let res;
   try {
-    res = await fetch(`${API_URL}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
+    res = await fetch(`${API_URL}${path}`, options);
   } catch {
     throw new Error("Tidak dapat terhubung ke server. Pastikan backend sudah berjalan.");
   }

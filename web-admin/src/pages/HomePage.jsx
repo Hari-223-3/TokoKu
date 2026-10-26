@@ -234,7 +234,7 @@ const SECTION_BY_PATH = { "/katalog": "katalog", "/about": "about" };
 
 // Satu halaman panjang: Beranda (desain "Home — Storefront") -> Katalog -> About Us
 export default function HomePage() {
-  const { products } = useData();
+  const { products, loading } = useData();
   const { user } = useAuth();
   const location = useLocation();
 
@@ -248,7 +248,8 @@ export default function HomePage() {
 
   return (
     <>
-      <Hero products={products} />
+      {/* key: hero dipasang ulang setelah produk selesai dimuat dari API, agar slot foto & rotasinya terisi */}
+      <Hero key={loading ? "loading" : "ready"} products={products} />
       <SearchBar />
       <CategoryPills />
 

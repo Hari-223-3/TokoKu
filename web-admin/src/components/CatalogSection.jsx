@@ -1,11 +1,13 @@
 import { useSearchParams } from "react-router-dom";
 import { useData } from "../context/DataContext";
+import { LoadError } from "./EmptyState";
+import { Spinner } from "./LoadingSpinner";
 import ProductCatalog from "./ProductCatalog";
 
 // Section Katalog Harga di beranda (menu utama "Katalog", id="katalog").
 // Mendukung ?kategori=...&q=... dari pencarian / pill kategori di hero.
 export default function CatalogSection() {
-  const { products } = useData();
+  const { products, loading, error } = useData();
   const [searchParams] = useSearchParams();
   const category = searchParams.get("kategori") ?? "Semua";
   const query = searchParams.get("q") ?? "";
@@ -22,8 +24,16 @@ export default function CatalogSection() {
             Pakaian, sepatu, tas, dan aksesoris buatan studio kami. Semua harga dalam Rupiah — masuk sebagai pelanggan untuk memesan.
           </p>
         </div>
-        {/* key: reset filter saat URL berubah (mis. klik pill kategori di hero) */}
-        <ProductCatalog key={`${category}|${query}`} products={products} initialCategory={category} initialQuery={query} />
+        {loading ? (
+          <div className="flex items-center gap-2 py-12 text-sm font-semibold text-muted">
+            <Spinner /> Memuat katalog...
+          </div>
+        ) : error ? (
+          <LoadError message={error} />
+        ) : (
+          // key: reset filter saat URL berubah (mis. klik pill kategori di hero)
+          <ProductCatalog key={`${category}|${query}`} products={products} initialCategory={category} initialQuery={query} />
+        )}
       </div>
     </section>
   );

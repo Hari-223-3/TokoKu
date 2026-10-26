@@ -7,8 +7,8 @@ import ProductThumb from "./ProductThumb";
 import SectionCard from "./SectionCard";
 
 // ---------------------------------------------------------------------------
-// Halaman Statistik Penjualan (Administrator). Semua angka dihitung dari
-// array pesanan di DataContext — belum ada database di tahap UTS.
+// Halaman Statistik Penjualan (Administrator). Semua angka dihitung di browser dari
+// daftar pesanan yang dimuat DataContext dari backend (GET /api/orders).
 // Pendapatan = pesanan yang sudah dibayar (status selain "Pending").
 // ---------------------------------------------------------------------------
 

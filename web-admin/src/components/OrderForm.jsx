@@ -4,9 +4,11 @@ import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
 import { SHIPPING_METHODS } from "../data/orders";
 import { addDays, formatDate, formatRupiah, toIsoDate } from "../utils/format";
-import FormField, { SubmitButton, SuccessPanel, primaryLinkClass, secondaryLinkClass } from "./FormField";
+import FormField, { ErrorAlert, SubmitButton, SuccessPanel, primaryLinkClass, secondaryLinkClass } from "./FormField";
 import ProductThumb from "./ProductThumb";
 
+// Hanya untuk PRATINJAU tanggal tiba di ringkasan sebelum pesanan dikirim.
+// Tanggal resmi dihitung ulang oleh server (backend/routes/orders.js) dengan aturan yang sama.
 // Pengiriman express 1 hari lebih cepat dari estimasi produk (minimal 1 hari)
 const FAST_METHODS = ["JNE Express", "SiCepat"];
 
@@ -52,6 +54,7 @@ export default function OrderForm({ initialProductId }) {
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const [createdOrder, setCreatedOrder] = useState(null);
+  const [submitError, setSubmitError] = useState("");
 
   const product = products.find((p) => p.id === Number(values.productId));
   const qty = Number(values.qty) || 0;
@@ -63,28 +66,29 @@ export default function OrderForm({ initialProductId }) {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: undefined }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setSubmitError("");
     const found = validate(values, product);
     setErrors(found);
     if (Object.keys(found).length > 0) return;
 
     setSaving(true);
-    setTimeout(() => {
-      const order = addOrder({
-        customerId: user.id,
-        customerName: user.name,
-        items: [{ productId: product.id, productName: product.name, qty, priceAtPurchase: product.price }],
-        totalAmount: product.price * qty,
-        status: "Pending",
+    try {
+      // Hanya produk + jumlah yang dikirim; harga, total, & status ditentukan server
+      const order = await addOrder({
+        items: [{ productId: product.id, qty }],
         shippingMethod: values.shippingMethod,
         shippingAddress: values.shippingAddress.trim(),
-        estimatedArrival: arrivalDate(product, values.shippingMethod),
         notes: values.notes.trim(),
       });
-      setSaving(false);
       setCreatedOrder(order);
-    }, 700);
+    } catch (err) {
+      // mis. stok sudah dibeli orang lain duluan -> "Stok ... tidak mencukupi"
+      setSubmitError(err.message);
+    } finally {
+      setSaving(false);
+    }
   }
 
   if (createdOrder) {
@@ -177,6 +181,7 @@ export default function OrderForm({ initialProductId }) {
             <span className="font-display text-[20px] font-extrabold text-ink">{formatRupiah(total)}</span>
           </div>
         </div>
+        <ErrorAlert>{submitError}</ErrorAlert>
         <SubmitButton loading={saving} className="w-full">
           Buat Pesanan
         </SubmitButton>

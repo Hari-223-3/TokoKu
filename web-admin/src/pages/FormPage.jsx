@@ -1,8 +1,9 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useData } from "../context/DataContext";
-import EmptyState from "../components/EmptyState";
+import EmptyState, { LoadError } from "../components/EmptyState";
 import Icon from "../components/Icon";
+import LoadingSpinner from "../components/LoadingSpinner";
 import OrderForm from "../components/OrderForm";
 import ProductForm from "../components/ProductForm";
 
@@ -10,7 +11,7 @@ import ProductForm from "../components/ProductForm";
 // Administrator -> tambah/edit produk (?id=...), Client -> buat pesanan (?productId=...)
 export default function FormPage() {
   const { isAdmin } = useAuth();
-  const { products } = useData();
+  const { products, loading, error } = useData();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -34,7 +35,12 @@ export default function FormPage() {
         <h1 className="font-display text-[26px] font-bold text-ink">{title}</h1>
       </div>
 
-      {notFound ? (
+      {/* form baru dipasang setelah data siap, karena isian awalnya diambil dari produk & pesanan */}
+      {loading ? (
+        <LoadingSpinner />
+      ) : error ? (
+        <LoadError message={error} />
+      ) : notFound ? (
         <EmptyState message="Produk tidak ditemukan" icon="box" />
       ) : isAdmin ? (
         // key memastikan form di-reset saat berpindah dari "edit" ke "tambah"
