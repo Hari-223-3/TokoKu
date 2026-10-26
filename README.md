@@ -22,7 +22,7 @@ The public site is a single scrolling page: Home (storefront) → Catalog → Ab
 ## Links
 
 - Repository: https://github.com/Hari-223-3/TokoKu
-- Website (GitHub Pages): https://hari-223-3.github.io/TokoKu/ (not deployed yet, see [Deploying the web app](#deploying-the-web-app-github-pages))
+- Website (GitHub Pages): https://hari-223-3.github.io/TokoKu/
 
 > **Note:** the GitHub Pages site only contains the web app. It needs a deployed backend to load products and log in, and backend hosting is covered in **Week 13**. Until then, run both parts locally as shown below.
 
@@ -68,8 +68,8 @@ GitHub Pages serves the built site from the `gh-pages` branch, which `npm run de
    npm run deploy      # builds the app and pushes dist/ to the gh-pages branch
    ```
 
-2. On GitHub, open **Settings → Pages**, keep Source on **Deploy from a branch**, choose branch **`gh-pages`** and folder **`/ (root)`**, then click **Save**. This is needed only the first time.
-3. After 1–2 minutes the site is at https://hari-223-3.github.io/TokoKu/. Run `npm run deploy` again whenever the web app changes.
+2. Only the first time (already done for this repository): on GitHub, open **Settings → Pages**, keep Source on **Deploy from a branch**, choose branch **`gh-pages`** and folder **`/ (root)`**, then click **Save**.
+3. After 1–2 minutes the update is live at https://hari-223-3.github.io/TokoKu/. Run `npm run deploy` again whenever the web app changes.
 
 The site's address must match `base: '/TokoKu/'` in `web-admin/vite.config.js`. If the repository is renamed, change `base` to the new name (capital letters included). Until the backend is hosted (Week 13), the deployed site opens, but the catalog shows *"Tidak dapat terhubung ke server"* and login does not work, because the build calls `http://localhost:3000/api`.
 
