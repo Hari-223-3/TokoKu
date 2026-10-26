@@ -39,6 +39,12 @@ export function AuthProvider({ children }) {
     return startSession(data);
   }
 
+  // Daftar akun client baru, lalu langsung login dengan token dari server
+  async function register({ name, username, password }) {
+    const data = await api("/auth/register", { method: "POST", body: { name, username, password } });
+    return startSession(data);
+  }
+
   function logout() {
     setToken(null);
     setUser(null);
@@ -54,6 +60,7 @@ export function AuthProvider({ children }) {
     loggedOut,
     clearJustLoggedIn: () => setJustLoggedIn(false),
     login,
+    register,
     logout,
   };
 

@@ -56,7 +56,9 @@ export default function App() {
             ))}
 
             {/* Area toko — login lewat backend (JWT) */}
-            <Route path="/login" element={<GuestRoute><LoginPage /></GuestRoute>} />
+            {/* key: isian & pesan error di-reset saat pindah antara login dan daftar */}
+            <Route path="/login" element={<GuestRoute><LoginPage key="login" /></GuestRoute>} />
+            <Route path="/daftar" element={<GuestRoute><LoginPage key="register" mode="register" /></GuestRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
             <Route path="/form" element={<ProtectedRoute><FormPage /></ProtectedRoute>} />
 

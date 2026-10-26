@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ErrorAlert } from "../components/FormField";
 import { Spinner } from "../components/LoadingSpinner";
@@ -12,9 +12,26 @@ const DEMO_ACCOUNTS = [
   { username: "sinta", password: "sinta123", label: "Client" },
 ];
 
-export default function LoginPage() {
-  const { login } = useAuth();
+// Aturan sama dengan POST /api/auth/register di backend
+function validateRegister({ name, username, password }) {
+  const errors = {};
+  if (!name.trim()) errors.name = "Nama wajib diisi";
+  if (!username.trim()) errors.username = "Username wajib diisi";
+  else if (username.trim().length < 3) errors.username = "Username minimal 3 karakter";
+  else if (!/^[a-zA-Z0-9_.]+$/.test(username.trim())) errors.username = "Hanya huruf, angka, titik, dan garis bawah";
+  if (!password) errors.password = "Password wajib diisi";
+  else if (password.length < 6) errors.password = "Password minimal 6 karakter";
+  return errors;
+}
 
+// mode "login" (#/login) atau "register" (#/daftar) — tampilan sama, isian form berbeda
+export default function LoginPage({ mode = "login" }) {
+  const { login, register } = useAuth();
+  const isRegister = mode === "register";
+  // diteruskan saat pindah login <-> daftar, agar client tetap diarahkan ke form pesanan produk yang dipilih
+  const location = useLocation();
+
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -26,18 +43,23 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
 
-    const errors = {};
-    if (!username.trim()) errors.username = "Username wajib diisi";
-    if (!password) errors.password = "Password wajib diisi";
+    let errors = {};
+    if (isRegister) {
+      errors = validateRegister({ name, username, password });
+    } else {
+      if (!username.trim()) errors.username = "Username wajib diisi";
+      if (!password) errors.password = "Password wajib diisi";
+    }
     setFieldErrors(errors);
     if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
     try {
       // Jika berhasil, GuestRoute otomatis mengarahkan ke halaman berikutnya
-      await login(username, password);
+      if (isRegister) await register({ name: name.trim(), username: username.trim(), password });
+      else await login(username, password);
     } catch (err) {
-      // pesan dari server, mis. "Username atau password salah"
+      // pesan dari server, mis. "Username atau password salah" / "Username sudah dipakai"
       setLoading(false);
       setError(err.message);
     }
@@ -76,10 +98,33 @@ export default function LoginPage() {
         <div className="tk-fade-up w-full max-w-sm">
           <div className="mx-auto mb-5 h-1 w-10 rounded-full bg-border lg:hidden" />
 
-          <h1 className="mb-1 font-display text-[26px] font-bold text-ink">Selamat datang</h1>
-          <p className="mb-6 text-sm leading-relaxed text-muted">Masuk untuk memesan produk, melacak pesanan, atau mengelola toko.</p>
+          <h1 className="mb-1 font-display text-[26px] font-bold text-ink">{isRegister ? "Buat akun baru" : "Selamat datang"}</h1>
+          <p className="mb-6 text-sm leading-relaxed text-muted">
+            {isRegister
+              ? "Daftar sebagai pelanggan untuk memesan produk dan melacak pengiriman."
+              : "Masuk untuk memesan produk, melacak pesanan, atau mengelola toko."}
+          </p>
 
           <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-3.5">
+            {isRegister && (
+              <div className="flex flex-col gap-1.5">
+                <label htmlFor="name" className="text-xs font-semibold text-ink">
+                  Nama lengkap
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  autoComplete="name"
+                  placeholder="mis. Budi Santoso"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  aria-invalid={Boolean(fieldErrors.name)}
+                  className="tk-input h-12"
+                />
+                {fieldErrors.name && <p className="text-xs font-semibold text-coral">{fieldErrors.name}</p>}
+              </div>
+            )}
+
             <div className="flex flex-col gap-1.5">
               <label htmlFor="username" className="text-xs font-semibold text-ink">
                 Username
@@ -105,7 +150,7 @@ export default function LoginPage() {
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  autoComplete="current-password"
+                  autoComplete={isRegister ? "new-password" : "current-password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -133,32 +178,45 @@ export default function LoginPage() {
             >
               {loading ? (
                 <>
-                  <Spinner /> Memeriksa...
+                  <Spinner /> {isRegister ? "Mendaftar..." : "Memeriksa..."}
                 </>
+              ) : isRegister ? (
+                "Daftar"
               ) : (
                 "Masuk"
               )}
             </button>
           </form>
 
-          <div className="my-5 flex items-center gap-2.5">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted">akun demo</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {DEMO_ACCOUNTS.map((acc) => (
-              <button
-                key={acc.username}
-                type="button"
-                onClick={() => fillDemo(acc)}
-                className="flex-1 rounded-full border-[1.5px] border-border bg-white px-3 py-2 text-xs font-semibold text-ink transition hover:border-ink hover:bg-ivory-alt"
-              >
-                {acc.username}
-                <span className="block text-[10px] font-medium text-muted">{acc.label}</span>
-              </button>
-            ))}
-          </div>
+          <p className="mt-4 text-center text-[13px] text-muted">
+            {isRegister ? "Sudah punya akun? " : "Belum punya akun? "}
+            <Link to={isRegister ? "/login" : "/daftar"} state={location.state} className="font-bold text-coral hover:underline">
+              {isRegister ? "Masuk" : "Daftar sebagai pelanggan"}
+            </Link>
+          </p>
+
+          {!isRegister && (
+            <>
+              <div className="my-5 flex items-center gap-2.5">
+                <div className="h-px flex-1 bg-border" />
+                <span className="text-xs text-muted">akun demo</span>
+                <div className="h-px flex-1 bg-border" />
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {DEMO_ACCOUNTS.map((acc) => (
+                  <button
+                    key={acc.username}
+                    type="button"
+                    onClick={() => fillDemo(acc)}
+                    className="flex-1 rounded-full border-[1.5px] border-border bg-white px-3 py-2 text-xs font-semibold text-ink transition hover:border-ink hover:bg-ivory-alt"
+                  >
+                    {acc.username}
+                    <span className="block text-[10px] font-medium text-muted">{acc.label}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
           <div className="mt-7 flex justify-center gap-5 text-[13px] font-semibold text-muted">
             <Link to="/" className="hover:text-ink hover:underline">
